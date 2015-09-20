@@ -9,7 +9,8 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 public class Percolation {
-    private boolean[][] gird;
+    private int[][] gird;
+    private boolean percolation;
     private int pN;
     private WeightedQuickUnionUF uf;
     // create N-by-N gird, with all sites blocked
@@ -17,18 +18,19 @@ public class Percolation {
         if (N <= 0) {
             throw new IllegalArgumentException();
         }
-        uf = new WeightedQuickUnionUF(N * N + 2);
-        gird = new boolean[N][N];
+        pN = N;
+        percolation = false;
+        uf = new WeightedQuickUnionUF(N * N);
+        gird = new int[N][N];
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++) {
-                gird[i][j] = false;
+                gird[i][j] = 0;
             }
-        pN = N;
     }
 
     //calculate the number of xyToID
     private int xyToID(int i, int j) {
-        return (i - 1) * pN + j;
+        return (i - 1) * pN + j - 1;
     }
 
     //open site (row i, column j) if it is not open already
@@ -38,31 +40,62 @@ public class Percolation {
         }
         if (isOpen(i, j))
             return;
-
-        gird[i - 1][j - 1] = true;
+        int mask = 0;
+        int p, q;
+        gird[i - 1][j - 1] = 1;
         if (i == 1) {
-            uf.union(0, xyToID(i, j));
+            gird[i - 1][j - 1] |= 1 << 1;
         }
         if (i == pN) {
-            uf.union(pN * pN + 1, xyToID(i, j));
+            gird[i - 1][j - 1] |= 1 << 2;
         }
+        mask |= gird[i - 1][j - 1];
         if (i - 1 >= 1 && isOpen(i - 1, j)) {
+            p = uf.find(xyToID(i - 1, j));
+            q = p % pN;
+            p /= pN;
+            mask |= gird[p][q];
+            gird[p][q] |= mask;
             uf.union(xyToID(i, j), xyToID(i - 1, j));
         }
         if (j - 1 >= 1 && isOpen(i, j - 1)) {
+            p = uf.find(xyToID(i, j - 1));
+            q = p % pN;
+            p /= pN;
+            mask |= gird[p][q];
+            gird[p][q] |= mask;
             uf.union(xyToID(i, j), xyToID(i, j - 1));
         }
         if (i + 1 <= pN && isOpen(i + 1, j)) {
+            p = uf.find(xyToID(i + 1, j));
+            q = p % pN;
+            p /= pN;
+            mask |= gird[p][q];
+            gird[p][q] |= mask;
             uf.union(xyToID(i, j), xyToID(i + 1, j));
         }
         if (j + 1 <= pN && isOpen(i, j + 1)) {
+            p = uf.find(xyToID(i, j + 1));
+            q = p % pN;
+            p /= pN;
+            mask |= gird[p][q];
+            gird[p][q] |= mask;
             uf.union(xyToID(i, j), xyToID(i, j + 1));
+        }
+        p = uf.find(xyToID(i, j));
+        q = p % pN;
+        p /= pN;
+        mask |= gird[p][q];
+        gird[p][q] |= mask;
+
+        if (gird[p][q] == 7) {
+            percolation = true;
         }
     }
 
     //is site (row i, column j) open?
     public boolean isOpen(int i, int j) {
-        return gird[i - 1][j - 1];
+        return gird[i - 1][j - 1] > 0;
     }
 
     //is site (row i, column j) full?
@@ -70,19 +103,17 @@ public class Percolation {
         if (i <= 0 || i > pN || j <= 0 || j > pN) {
             throw new IndexOutOfBoundsException();
         }
+        int p, q;
+        p = uf.find(xyToID(i, j));
+        q = p % pN;
+        p /= pN;
 
-        if ( isOpen(i, j) && uf.connected(0, xyToID(i, j))) {
-                return true;
-        }
-        return false;
+        return (gird[p][q] & 0x2) == 0x2;
     }
 
     // does the system perlate?
     public boolean percolates() {
-        if (uf.connected(0, pN * pN + 1)) {
-                return true;
-        }
-        return false;
+        return percolation;
     }
 
     public static void main(String[] args) {

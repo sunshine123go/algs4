@@ -34,7 +34,8 @@ public class PercolationStats {
             if (count > 0 && pField.percolates()) {
                 break;
             }
-            rol = StdRandom.uniform(1, pN + 1); col = StdRandom.uniform(1, pN + 1);
+            rol = StdRandom.uniform(1, pN + 1);
+            col = StdRandom.uniform(1, pN + 1);
             if (!pField.isOpen(rol, col)) {
                 pField.open(rol, col);
                 count++;
