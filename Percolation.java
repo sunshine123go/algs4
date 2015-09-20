@@ -9,7 +9,7 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 public class Percolation {
-    private int[][] gird;
+    private char[][] gird;
     private boolean percolation;
     private int pN;
     private WeightedQuickUnionUF uf;
@@ -21,7 +21,7 @@ public class Percolation {
         pN = N;
         percolation = false;
         uf = new WeightedQuickUnionUF(N * N);
-        gird = new int[N][N];
+        gird = new char[N][N];
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++) {
                 gird[i][j] = 0;
