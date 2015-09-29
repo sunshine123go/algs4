@@ -72,7 +72,7 @@ public class Deque<Item> implements Iterable<Item> {
         first = first.next;
         if (isEmpty()) {
             last = null;
-        } else {
+        } else {    //if first is empty, them first.prev is Invalid.
             first.prev = null;
         }
         return item;

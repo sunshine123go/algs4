@@ -16,7 +16,7 @@ public class Subset {
         while (!StdIn.isEmpty()) {
             String item = StdIn.readString();
             n++;
-            int i = StdRandom.uniform(n);
+            int i = StdRandom.uniform(n); //shuffle?
             if (i < k) {
                 if (n > k) {
                     s.dequeue();

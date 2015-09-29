@@ -72,11 +72,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private int current = N;
         private Item[] temps;
         public RandomIterator() {
-            temps = items.clone();
+            temps = items.clone();      //if not clone, then it will influence other iterator.
 //            if (!isEmpty()) {
 //              StdRandom.shuffle(temps, 0, N - 1);
 //            }
-            Item temp;
+            Item temp;  //洗牌 algorithm.
             for (int i = 0; i < size(); i++) {
                 int j = StdRandom.uniform(i + 1);
                 temp = temps[j];
@@ -90,7 +90,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         public void remove() {
             throw new java.lang.UnsupportedOperationException();
         }
-        public Item next() {
+        public Item next() {    //notice the boundary check
             if (current < 1) {
                 throw new java.util.NoSuchElementException();
             }
