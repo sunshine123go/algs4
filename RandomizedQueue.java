@@ -70,13 +70,18 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
     private class RandomIterator implements Iterator<Item> {
         private int current = N;
+        private Item[] temps;
         public RandomIterator() {
+            temps = items.clone();
+//            if (!isEmpty()) {
+//              StdRandom.shuffle(temps, 0, N - 1);
+//            }
             Item temp;
             for (int i = 0; i < size(); i++) {
                 int j = StdRandom.uniform(i + 1);
-                temp = items[j];
-                items[j] = items[i];
-                items[i] = temp;
+                temp = temps[j];
+                temps[j] = temps[i];
+                temps[i] = temp;
             }
         }
         public boolean hasNext() {
@@ -89,20 +94,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (current < 1) {
                 throw new java.util.NoSuchElementException();
             }
-            return items[--current];
+            return temps[--current];
         }
     }
     public static void main(String[] args) {
         RandomizedQueue<Integer> a = new RandomizedQueue<Integer>();
-        a.enqueue(0);
+        a.enqueue(1);
         a.enqueue(3);
         a.enqueue(5);
-        a.enqueue(4);
-        a.enqueue(4);
         for (int i : a) {
             StdOut.println(i);
-            StdOut.println("*******************");
-
         }
         StdOut.println("##############");
         for (int j : a) {
