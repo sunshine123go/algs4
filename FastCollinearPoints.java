@@ -1,8 +1,11 @@
 package lab3;
 
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by wcf on 15-10-5.
@@ -15,53 +18,69 @@ public class FastCollinearPoints {
     private int pN;
 
     public FastCollinearPoints(Point[] points) {
-        if(points == null) {
+        if (points == null) {
             throw new java.lang.NullPointerException("argument is null");
         }
-        this.points = points;
+        this.points = points.clone();
         this.pN = points.length;
         linenumber = 0;
         lineSegments = new ArrayList<LineSegment>();
 
-        Point p;
-        for(int i = 0; i < pN; i++) {
-            if(this.points[i] == null) {
-                throw new java.lang.IllegalArgumentException("Illegal Arguments");
-            }
-            p = this.points[i];
-            MergeX.sort(this.points);
-            MergeX.sort(this.points, p.slopeOrder());
-            Point first = null;
-            Point last = null;
-            int count = 1;
-            for(int j = 1; j < pN - 1; j++) {
-                if(p.slopeTo(this.points[j]) == Double.NEGATIVE_INFINITY) {
-                    throw new java.lang.IllegalArgumentException("Illegal arguments");
+        for (int ii = 0; ii < pN; ii++)
+            for (int jj = ii; jj < pN; jj++) {
+                if (this.points[jj] == null) {
+                    throw new java.lang.
+                            IllegalArgumentException("Illegal Arguments");
                 }
-                if(p.slopeTo(this.points[j + 1]) != p.slopeTo(this.points[j])) {
-                    last = p.compareTo(this.points[j]) < 0 ? this.points[j] : p;
-//                    last = this.points[j];
-                    if(count >= 3 && p.compareTo(last) == 0) {
-//                            if(p.compareTo(first) < 0) {
-                                lineSegments.add(new LineSegment(first, last));
-//                            }
+                if (ii != jj && this.points[ii].compareTo(this.points[jj]) == 0) {
+                    throw new java.lang.
+                            IllegalArgumentException("Illegal Arguments");
+                }
+            }
+
+        Point p;
+        for (int i = 0; i < pN; i++) {
+            p = points[i];
+            Arrays.sort(this.points, p.slopeOrder());
+
+            Point first = p;
+            Point last = p;
+            int count = 1;
+            for (int j = 1; j < pN - 1; j++) {
+                if (p.slopeTo(this.points[j]) == Double.NEGATIVE_INFINITY) {
+                    throw new java.lang.
+                            IllegalArgumentException("Illegal arguments");
+                }
+                if (p.slopeTo(this.points[j + 1]) != p.slopeTo(this.points[j])) {
+                    last = last.compareTo(this.points[j]) < 0 ?
+                            this.points[j] : last;
+                    first = first.compareTo(this.points[j]) > 0 ?
+                            this.points[j] : first;
+                    if (count >= 3) {
+                        if (p.compareTo(first) == 0) {
+                            lineSegments.add(new LineSegment(p, last));
+                        }
                     }
-                    first = null;
+                    first = p;
+                    last = p;
                     count = 1;
                 } else {
-                    if(first == null) {
-                        first = p.compareTo(this.points[j]) > 0 ? this.points[j] : p;
-//                        first = this.points[j];
-                    }
+                    first = first.compareTo(this.points[j]) > 0 ?
+                            this.points[j] : first;
+                    last = last.compareTo(this.points[j]) < 0 ?
+                            this.points[j] : last;
                     count++;
-                    if(j + 1 == pN - 1 && count >= 3) {
-                        last = p.compareTo(this.points[j + 1]) < 0 ? this.points[j+1] : p;
-//                        last = this.points[j+1];
-                        if(p.compareTo(last) == 0) {
-                            lineSegments.add(new LineSegment(first, last));
+                    if (j + 1 == pN - 1 && count >= 3) {
+                        last = last.compareTo(this.points[j+1]) < 0 ?
+                                this.points[j+1] : last;
+                        first = first.compareTo(this.points[j+1]) > 0 ?
+                                this.points[j+1] : first;
+                        if (p.compareTo(first) == 0) {
+                            lineSegments.add(new LineSegment(p, last));
                         }
-                        first = null;
                         count = 1;
+                        first = p;
+                        last = p;
                     }
                 }
             }
@@ -75,7 +94,7 @@ public class FastCollinearPoints {
     }
 
     public LineSegment[] segments() {
-        return ls;
+        return ls.clone();
     }
 
     public static void main(String[] args) {

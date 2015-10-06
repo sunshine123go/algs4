@@ -1,42 +1,59 @@
 package lab3;
 
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.util.ArrayList;
+
 /**
  * Created by wcf on 15-10-5.
  */
 public class BruteCollinearPoints {
-    private Point[] points;
-    private Point p, q, r, s;
+    private Point[] ipoints;
     private int pN;
-    private LineSegment[] lineSegments;
+    private ArrayList<LineSegment> lineSegments;
+    private LineSegment[] ls;
     private int linenumber;
 
     public BruteCollinearPoints(Point[] points) {
-        if(points == null) {
+        if (points == null) {
             throw new java.lang.NullPointerException("argument is null");
         }
-        this.points = points;
+        this.ipoints = points.clone();
         this.pN = points.length;
-        lineSegments = new LineSegment[pN];
+        lineSegments = new ArrayList<LineSegment>();
         linenumber = 0;
 
-        for(int i = 0; i < pN; i++)
-            for(int j = i + 1; j < pN; j++)
-                for(int k = j + 1; j < pN; j++)
-                    for(int l = k + 1; l < pN; l++) {
-                        p = points[i];
-                        q = points[j];
-                        r = points[k];
-                        s = points[l];
-                        if (p.compareTo(q) == 0 || p.compareTo(r) == 0
-                                || p.compareTo(s) == 0 || q.compareTo(r) == 0
-                                || q.compareTo(s) == 0 || r.compareTo(s) == 0) {
-                            throw new java.lang.IllegalArgumentException("illegal arguments");
-                        }
+        for (int ii = 0; ii < pN; ii++)
+            for (int jj = ii; jj < pN; jj++) {
+                if (ipoints[jj] == null) {
+                    throw new java.lang.
+                            IllegalArgumentException("Illegal Arguments");
+                }
+                if (ii != jj && ipoints[ii].compareTo(ipoints[jj]) == 0) {
+                    throw new java.lang.
+                            IllegalArgumentException("Illegal Arguments");
+                }
+            }
 
-                        if(p.slopeTo(q) == p.slopeTo(r) && p.slopeTo(r) == p.slopeTo(s)) {
-                            lineSegments[linenumber++] = line(p, q, r, s);
+        Point p, q, r, s;
+        for (int i = 0; i < pN; i++)
+            for (int j = i + 1; j < pN; j++)
+                for (int k = j + 1; k < pN; k++)
+                    for (int l = k + 1; l < pN; l++) {
+                        p = ipoints[i];
+                        q = ipoints[j];
+                        r = ipoints[k];
+                        s = ipoints[l];
+
+                        if (p.slopeTo(q) == p.slopeTo(r)
+                                && p.slopeTo(r) == p.slopeTo(s)) {
+                            lineSegments.add(line(p, q, r, s));
                         }
                     }
+        ls = lineSegments.toArray(new LineSegment[lineSegments.size()]);
+        linenumber = ls.length;
     }
 
     private LineSegment line(Point p, Point q, Point r, Point s) {
@@ -47,7 +64,7 @@ public class BruteCollinearPoints {
 
         maxp = p.compareTo(q) > 0 ? p : q;
         maxp = maxp.compareTo(r) > 0 ? maxp : r;
-        maxp = maxp.compareTo(s) > 0 ? maxp :s;
+        maxp = maxp.compareTo(s) > 0 ? maxp : s;
 
         return new LineSegment(minp, maxp);
     }
@@ -56,6 +73,36 @@ public class BruteCollinearPoints {
     }
 
     public LineSegment[] segments() {
-        return lineSegments;
+        return ls.clone();
+    }
+
+    public static void main(String[] args) {
+
+        // read the N points from a file
+        In in = new In(args[0]);
+        int N = in.readInt();
+        Point[] points = new Point[N];
+        for (int i = 0; i < N; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
+
+        // draw the points
+        StdDraw.show(0);
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
+        for (Point p : points) {
+            p.draw();
+        }
+        StdDraw.show();
+
+        // print and draw the line segments
+        BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+        for (LineSegment segment : collinear.segments()) {
+            StdOut.println(segment);
+            segment.draw();
+        }
+        StdOut.println(collinear.numberOfSegments());
     }
 }

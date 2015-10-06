@@ -62,17 +62,20 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         /* YOUR CODE HERE */
-        if(that.x == this.x) {
-            if(that.y == this.y) {
+        double dy = that.y - this.y;
+        double dx = that.x - this.x;
+
+        if (dx == 0) {
+            if (dy == 0) {
                 return Double.NEGATIVE_INFINITY;
             } else {
                 return Double.POSITIVE_INFINITY;
             }
-        } else if(that.y == this.y) {
+        } else if (dy == 0) {
                 return +0.0;
         }
         else {
-            return (that.y - this.y) / (that.x - this.x);
+            return dy / dx;
         }
     }
 
@@ -90,15 +93,26 @@ public class Point implements Comparable<Point> {
      */
     public int compareTo(Point that) {
         /* YOUR CODE HERE */
-        if(this.y < that.y || (this.y == that.y && this.x < that.x)) {
+        if (this.y < that.y || (this.y == that.y && this.x < that.x)) {
             return -1;
-        } else if(this.y == that.y && this.x == that.x) {
+        } else if (this.y == that.y && this.x == that.x) {
             return 0;
         } else {
             return 1;
         }
     }
 
+    private class SlopeOrder implements Comparator<Point> {
+        public int compare(Point o1, Point o2) {
+            if (slopeTo(o1) < slopeTo(o2)) {
+                return -1;
+            } else if (slopeTo(o1) > slopeTo(o2)) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
     /**
      * Compares two points by the slope they make with this point.
      * The slope is defined as in the slopeTo() method.
@@ -107,18 +121,7 @@ public class Point implements Comparable<Point> {
      */
     public Comparator<Point> slopeOrder() {
         /* YOUR CODE HERE */
-        return new Comparator<Point>() {
-            @Override
-            public int compare(Point o1, Point o2) {
-                if(slopeTo(o1) < slopeTo(o2)) {
-                    return -1;
-                } else if(slopeTo(o1) > slopeTo(o2)) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        };
+        return new SlopeOrder();
     }
 
 
