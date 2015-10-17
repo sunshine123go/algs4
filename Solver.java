@@ -52,7 +52,7 @@ public class Solver {
         while (!PQ.isEmpty() && !PQ_t.isEmpty()) {
             current = PQ.delMin();
             current_t = PQ_t.delMin();
-
+            // In case unsolvable
             if (current.board.isGoal() || current_t.board.isGoal()) {
                 break;
             }
@@ -61,6 +61,9 @@ public class Solver {
                 int new_cost = current.cost + 1;
                 _prev = current;
                 boolean flag = false;
+                // In case add the parent board, the best way is to walk all
+                // board that have accessed, but that cost too much time if
+                // there is not a hash table
                 for (int i = 0; i < 5; i++) {
                     if (_prev == null) {
                         break;

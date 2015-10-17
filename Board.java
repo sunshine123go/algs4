@@ -15,9 +15,14 @@ public class Board {
     private int manhan = 0;
     private int ham = 0;
 
+    // construct a board from an N-by-N array of blocks
+    // (where blocks[i][j] = block in row i, column j)
     public Board(int[][] blocks) {
         this.N = (char) blocks.length;
         this.blocks = new int[N][N];
+        // the 2d array is a array consist of 1d array
+        // so it save the reference of 1d instead of by value
+        // it must implement the deep copy not a easy clone
         for (int i = 0; i < (int) N; i++) {
             for (int j = 0; j < (int) N; j++) {
                 this.blocks[i][j] = blocks[i][j];
@@ -35,28 +40,33 @@ public class Board {
                 }
             }
         }
-    }          // construct a board from an N-by-N array of blocks
+    }
 
-    // (where blocks[i][j] = block in row i, column j)
     private void swap(int[][] a, int a1, int b1, int a2, int b2) {
         int temp;
         temp = a[a1][b1];
         a[a1][b1] = a[a2][b2];
         a[a2][b2] = temp;
     }
+    // board dimension N
     public int dimension() {
         return (int) N;
-    }                // board dimension N
+    }
+    // number of blocks out of place
     public int hamming() {
         return ham;
-    }                  // number of blocks out of place
+    }
+    // sum of Manhattan distances between blocks and goal
     public int manhattan() {
         return manhan;
-    }                // sum of Manhattan distances between blocks and goal
+    }
+    // is this board the goal board?
     public boolean isGoal() {
         return manhan == 0;
-    }               // is this board the goal board?
+    }
+    // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
+        // swap the two value which is not zero
         int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
         int flag = 1;
         for (int i = 0; i < (int) N; i++) {
@@ -80,7 +90,8 @@ public class Board {
         Board tw = new Board(blocks);
         swap(blocks, a1, b1, a2, b2);
         return tw;
-    }                   // a board that is obtained by exchanging any pair of blocks
+    }
+    // does this board equaly?
     public boolean equals(Object y) {
         if (this == y) {
             return true;
@@ -105,7 +116,8 @@ public class Board {
                 }
             }
         return true;
-    }       // does this board equaly?
+    }
+    // all neighboring boards
     public Iterable<Board> neighbors() {
         ArrayList<Board> neighbor = new ArrayList<Board>();
         if (zi - 1 >= 0) {
@@ -130,7 +142,8 @@ public class Board {
         }
 
         return neighbor;
-    }    // all neighboring boards
+    }
+    // string representation of this board (in the output format specified below)
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append((int) N + "\n");
@@ -142,7 +155,6 @@ public class Board {
         }
         return s.toString();
     }
-    // string representation of this board (in the output format specified below)
 
     public static void main(String[] args) {
         In in = new In(args[0]);
@@ -154,7 +166,6 @@ public class Board {
         Board unit = new Board(blocks);
 
 //        StdOut.println(unit.twin());
-//
         StdOut.println(unit);
         StdOut.println("###" + unit.manhattan());
     }
