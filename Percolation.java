@@ -28,12 +28,14 @@ public class Percolation {
             }
     }
 
-    //calculate the number of xyToID
+    // calculate the number of xyToID
     private int xyToID(int i, int j) {
         return (i - 1) * pN + j - 1;
     }
 
-    //open site (row i, column j) if it is not open already
+    // open site (row i, column j) if it is not open already
+    // every time open a site
+    // mark the site's root that the site have connect
     public void open(int i, int j) {
         if (i <= 0 || i > pN || j <= 0 || j > pN) {
             throw new IndexOutOfBoundsException();
@@ -93,12 +95,12 @@ public class Percolation {
         }
     }
 
-    //is site (row i, column j) open?
+    // is site (row i, column j) open?
     public boolean isOpen(int i, int j) {
         return gird[i - 1][j - 1] > 0;
     }
 
-    //is site (row i, column j) full?
+    // is site (row i, column j) full?
     public boolean isFull(int i, int j) {
         if (i <= 0 || i > pN || j <= 0 || j > pN) {
             throw new IndexOutOfBoundsException();
