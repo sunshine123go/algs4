@@ -57,6 +57,8 @@ public class FastCollinearPoints {
                     first = first.compareTo(this.points[j]) > 0 ?
                             this.points[j] : first;
                     if (count >= 3) {
+                        // In case repeat, only add the p as the first
+                        // point of the lineSegments
                         if (p.compareTo(first) == 0) {
                             lineSegments.add(new LineSegment(p, last));
                         }
