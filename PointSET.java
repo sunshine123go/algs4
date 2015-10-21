@@ -55,7 +55,7 @@ public class PointSET {
         Point2D near = null;
         double distance = Double.POSITIVE_INFINITY;
         for (Point2D key : points) {
-            if (!p.equals(key) && p.distanceSquaredTo(key) < distance) {
+            if (p.distanceSquaredTo(key) < distance) {
                 distance = p.distanceSquaredTo(key);
                 near = key;
             }
