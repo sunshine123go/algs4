@@ -45,7 +45,7 @@ public class KdTree {
             double cmp = p.x() - root.point.x();
             if (cmp < 0) {
                 root.lb = insertX(root.lb, p, root, true);
-            } else if (cmp > 0){
+            } else if (cmp > 0) {
                 root.rt = insertX(root.rt, p, root, false);
             } else if (!p.equals(root.point)) {
                 root.rt = insertX(root.rt, p, root, false);
@@ -55,19 +55,21 @@ public class KdTree {
         }
         N++;
     }
+    // the insertX and insertY can be merged to one by add another argument
     private Node insertX(Node x, Point2D p, Node xp, boolean lb) {
+        // construct the rect only at the time to insert a null Node
         if (x == null) {
             if (lb) {
-                RectHV rectL =
-                        new RectHV(xp.rect.xmin(), xp.rect.ymin(), xp.point.x(), xp.rect.ymax());
+                RectHV rectL = new RectHV(xp.rect.xmin(), xp.rect.ymin(),
+                        xp.point.x(), xp.rect.ymax());
                 return new Node(p, rectL);
             } else {
-                RectHV rectR =
-                        new RectHV(xp.point.x(), xp.rect.ymin(), xp.rect.xmax(), xp.rect.ymax());
+                RectHV rectR = new RectHV(xp.point.x(), xp.rect.ymin(),
+                        xp.rect.xmax(), xp.rect.ymax());
                 return new Node(p, rectR);
             }
         }
-        double cmp = p.x() - x.point.x();
+        double cmp = p.y() - x.point.y();
         if (cmp < 0) {
             x.lb = insertY(x.lb, p, x, true);
         } else if (cmp > 0) {
@@ -82,16 +84,16 @@ public class KdTree {
     private Node insertY(Node x, Point2D p, Node xp, boolean lb) {
         if (x == null) {
             if (lb) {
-                RectHV rectB =
-                        new RectHV(xp.rect.xmin(), xp.rect.ymin(), xp.rect.xmax(), xp.point.y());
+                RectHV rectB = new RectHV(xp.rect.xmin(), xp.rect.ymin(),
+                        xp.rect.xmax(), xp.point.y());
                 return new Node(p, rectB);
             } else {
-                RectHV rectT =
-                        new RectHV(xp.rect.xmin(), xp.point.y(), xp.rect.xmax(), xp.rect.ymax());
+                RectHV rectT = new RectHV(xp.rect.xmin(), xp.point.y(),
+                        xp.rect.xmax(), xp.rect.ymax());
                 return new Node(p, rectT);
             }
         }
-        double cmp = p.y() - x.point.y();
+        double cmp = p.x() - x.point.x();
         if (cmp < 0) {
             x.lb = insertX(x.lb, p, x, true);
         } else if (cmp > 0) {
@@ -207,7 +209,6 @@ public class KdTree {
             mindis = pTp;
             near = x.point;
         }
-        double xToL = x.rect.distanceSquaredTo(p);
         if (x.lb == null) {
             nearest(x.rt, p);
         } else if (x.rt == null) {
@@ -215,12 +216,13 @@ public class KdTree {
         } else if (x.lb.rect.distanceSquaredTo(p)
                 < x.rt.rect.distanceSquaredTo(p)) {
             nearest(x.lb, p);
-            if (mindis >= xToL) {
+            // if the min distance less than the other boundary, don't access rt
+            if (mindis >= x.rt.rect.distanceSquaredTo(p)) {
                 nearest(x.rt, p);
             }
         } else {
             nearest(x.rt, p);
-            if (mindis >= xToL) {
+            if (mindis >= x.lb.rect.distanceSquaredTo(p)) {
                 nearest(x.lb, p);
             }
         }
