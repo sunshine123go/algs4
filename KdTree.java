@@ -38,49 +38,66 @@ public class KdTree {
         if (p == null) {
             throw new java.lang.IllegalArgumentException("Illegal argument!");
         }
-        RectHV rect = new RectHV(0.0, 0.0, 1.0, 1.0);
-        root = insertX(root, p, rect);
+        if (isEmpty()) {
+            RectHV rect = new RectHV(0.0, 0.0, 1.0, 1.0);
+            root = new Node(p, rect);
+        } else {
+            double cmp = p.x() - root.point.x();
+            if (cmp < 0) {
+                root.lb = insertX(root.lb, p, root, true);
+            } else if (cmp > 0){
+                root.rt = insertX(root.rt, p, root, false);
+            } else if (!p.equals(root.point)) {
+                root.rt = insertX(root.rt, p, root, false);
+            } else {
+                N--;
+            }
+        }
         N++;
     }
-    private Node insertX(Node x, Point2D p, RectHV rect) {
+    private Node insertX(Node x, Point2D p, Node xp, boolean lb) {
         if (x == null) {
-            return new Node(p, rect);
+            if (lb) {
+                RectHV rectL =
+                        new RectHV(xp.rect.xmin(), xp.rect.ymin(), xp.point.x(), xp.rect.ymax());
+                return new Node(p, rectL);
+            } else {
+                RectHV rectR =
+                        new RectHV(xp.point.x(), xp.rect.ymin(), xp.rect.xmax(), xp.rect.ymax());
+                return new Node(p, rectR);
+            }
         }
         double cmp = p.x() - x.point.x();
         if (cmp < 0) {
-            RectHV rectL =
-                    new RectHV(rect.xmin(), rect.ymin(), x.point.x(), rect.ymax());
-            x.lb = insertY(x.lb, p, rectL);
+            x.lb = insertY(x.lb, p, x, true);
         } else if (cmp > 0) {
-            RectHV rectR =
-                    new RectHV(x.point.x(), rect.ymin(), rect.xmax(), rect.ymax());
-            x.rt = insertY(x.rt, p, rectR);
+            x.rt = insertY(x.rt, p, x, false);
         } else if (!p.equals(x.point)) {
-            RectHV rectR =
-                    new RectHV(x.point.x(), rect.ymin(), rect.xmax(), rect.ymax());
-            x.rt = insertY(x.rt, p, rectR);
+            x.rt = insertY(x.rt, p, x, false);
         } else {
             N--;
         }
         return x;
     }
-    private Node insertY(Node x, Point2D p, RectHV rect) {
+    private Node insertY(Node x, Point2D p, Node xp, boolean lb) {
         if (x == null) {
-            return new Node(p, rect);
+            if (lb) {
+                RectHV rectB =
+                        new RectHV(xp.rect.xmin(), xp.rect.ymin(), xp.rect.xmax(), xp.point.y());
+                return new Node(p, rectB);
+            } else {
+                RectHV rectT =
+                        new RectHV(xp.rect.xmin(), xp.point.y(), xp.rect.xmax(), xp.rect.ymax());
+                return new Node(p, rectT);
+            }
         }
         double cmp = p.y() - x.point.y();
         if (cmp < 0) {
-            RectHV rectB =
-                    new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), x.point.y());
-            x.lb = insertX(x.lb, p, rectB);
+            x.lb = insertX(x.lb, p, x, true);
         } else if (cmp > 0) {
-            RectHV rectT =
-                    new RectHV(rect.xmin(), x.point.y(), rect.xmax(), rect.ymax());
-            x.rt = insertX(x.rt, p, rectT);
+            x.rt = insertX(x.rt, p, x, false);
         } else if (!p.equals(x.point)) {
-            RectHV rectT =
-                    new RectHV(rect.xmin(), x.point.y(), rect.xmax(), rect.ymax());
-            x.rt = insertX(x.rt, p, rectT);
+            x.rt = insertX(x.rt, p, x, false);
         } else {
             N--;
         }
@@ -195,12 +212,12 @@ public class KdTree {
             nearest(x.rt, p);
         } else if (x.rt == null) {
             nearest(x.lb, p);
-//        } else if (x.lb.rect.distanceSquaredTo(p)
-//                < x.rt.rect.distanceSquaredTo(p)) {
-//            nearest(x.lb, p);
-//            if (mindis >= xToL) {
-//                nearest(x.rt, p);
-//            }
+        } else if (x.lb.rect.distanceSquaredTo(p)
+                < x.rt.rect.distanceSquaredTo(p)) {
+            nearest(x.lb, p);
+            if (mindis >= xToL) {
+                nearest(x.rt, p);
+            }
         } else {
             nearest(x.rt, p);
             if (mindis >= xToL) {
